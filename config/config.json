@@ -1,0 +1,7 @@
+{
+
+    "development":{
+        "JWT_KEY": "helloworld"
+    }
+    
+}
