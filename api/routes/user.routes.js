@@ -18,7 +18,7 @@ module.exports = (app,version)=>{
         helperController.createHashPassword, 
         userController.signUpUser
         )
-/****************************User Login*********************** */     
+/****************************User Login******************************/     
     app.post(version + moduleName + '/login',
         userController.userLogin
         )
@@ -31,5 +31,24 @@ module.exports = (app,version)=>{
         userController.addMember
 
     )
+/******************************Get Myprofile**************************/ 
+    app.get(version + moduleName + '/my-profile',
+        checkAuth, 
+        userController.getMyProfile
+        )
 
+/******************************Delete A Member**************************/ 
+    app.delete(version + moduleName + '/:id', 
+        checkAuth,
+        userController.deleteMember
+    )
+
+/******************************Update Member****************************/
+    app.patch(version + moduleName + '/:id', 
+        checkAuth,
+        userMiddleware.validateUpdateUserParams,
+        userController.updateUser
+    )
+
+    
 }
