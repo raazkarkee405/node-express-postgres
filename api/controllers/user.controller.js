@@ -3,8 +3,10 @@ const db = require('../../database/postgres');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { response } = require('../../app/app');
+const { findAll, findOne } = require('../models/user.model');
 
 
+// get all users
 let getAllUser = async (req,res)=>{
     try {
         const result = await User.findAll({
@@ -21,7 +23,6 @@ let getAllUser = async (req,res)=>{
         else{
             return res.status(400).json({
                 message:"error",
-                result:result
             })
         }
     } catch (error) {
@@ -31,9 +32,32 @@ let getAllUser = async (req,res)=>{
     }
 }
 
-// // Create a new user
-// const jane = await User.create({ firstName: "Jane", lastName: "Doe" });
-// console.log("Jane's auto-generated ID:", jane.id);
+// get my profile
+let getMyProfile = async (req, res) => {
+    try{
+        const result = await User.findOne({
+            where: {
+                id: req.userData.userId
+            }
+        });
+        if(result){
+            return res.status(200).json({
+                message:"success",
+                result:result
+            })
+        }else{
+            return res.status(400).json({
+                message: "error",
+            })
+        }
+    }catch(error) {
+        return res.status(400).json({
+            message: error.message
+        })
+    }
+}
+
+// Create a new user
 
 let signUpUser = async (req, res) => {
     try{
@@ -46,7 +70,7 @@ let signUpUser = async (req, res) => {
         email: email,
         password: password
     })
-    console.log("User",userObj);
+  //  console.log("User",userObj);
     if(!userObj){
         throw new Error("something went wrong");
     }
@@ -130,7 +154,7 @@ let addMember = async(req, res) => {
     }
     user["email"] = userObj.email;
     user["username"] = userObj.username;
-    user["your email"] = req.userData.email
+    user["Created By"] = req.userData.email
     return res.status(200).json({
         message: "success",
         result: user
@@ -143,9 +167,100 @@ let addMember = async(req, res) => {
     }
 }
 
+//Delete a Member 
+let deleteMember = async (req, res) => {
+    try{
+        const id = req.params.id;
+        const result = await User.destroy({
+            where: {
+               id: id,
+               invitedby: req.userData.userId
+                
+            }
+        })
+        console.log('deleted', result);
+        if(result){
+            return res.status(200).json({
+                message:"user deleted",
+            
+            })
+        }
+        else{
+            return res.status(400).json({
+                message:"error",
+            })
+        }
+    }
+    catch(error){
+        console.log("error", error);
+        return res.status(400).json({
+            message: "something went wrong"
+        })
+    }
+}
+
+// Update user and member details
+let updateUser = async (req, res) => {
+    try{
+        const id = parseInt(req.params.id);
+        let result = null
+        let query = {}
+        console.log(typeof(id), typeof(req.userData.userId));
+        if (id === req.userData.userId){
+            query["id"] = id
+             result = await User.findOne({
+                where: query
+            });
+        } else {
+            query["id"] = id
+            query["invitedby"] = req.userData.userId
+             result = await User.findOne({
+                where: query
+            });
+        } 
+        console.log("result data", result);
+        if(result){
+            const usrObj = await User.update(
+                {
+                    username: req.body.username,
+                    phone: req.body.phone,
+                    address: req.body.address
+                },
+                {   returning: true,
+                    where: query
+                }
+            )
+        console.log('user object', usrObj);
+            if(!usrObj){
+                throw new Error('Something went wrong');
+            }
+            else{
+                return res.status(200).json({
+                    message: "success",
+                    result: usrObj
+                })
+            }
+        }else{
+        
+            return res.status(400).json({
+                message: "user not found"
+            })
+        }
+       
+    }catch(error){
+        return res.status(400).json({
+            message: error.message
+        })
+    }
+}
+
+
 module.exports = {
     getAllUser,
+    getMyProfile,
     signUpUser,
     userLogin,
-    addMember
+    addMember,
+    deleteMember,
+    updateUser
 }
