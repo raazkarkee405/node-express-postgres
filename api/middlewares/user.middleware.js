@@ -1,6 +1,5 @@
 const createUserValidation = require('../validation/user/user-create.validation');
-// const changePasswordValidation = require('../validation/user/changepassword.validation');
-// const userOtpValidation = require('../validation/user/user-otp.validation');
+const updateUserValidation = require('../validation/user/user-update.validation')
 
 /******************************** Validate Create User Params ***********************/
 let validateCreateUserParams = (req,res,next)=>{
@@ -13,31 +12,21 @@ let validateCreateUserParams = (req,res,next)=>{
        next();
     }
 }
-/******************************** Validate Change Password params ***************************/
-// let validateChangePasswordParams = (req,res,next)=>{
-//     const { errors , isValid} = changePasswordValidation(req.body);
-//     if(!isValid){
-//         return res.status(400).json({
-//             errors
-//         })
-//     }else{
-//        next();
-//     }
-// }
 
-// /************************Validate Otp Params ***************************/
-// let validateOtpParams = (req,res,next)=>{
-//     const { errors , isValid} = userOtpValidation(req.body);
-//     if(!isValid){
-//         return res.status(400).json({
-//             errors
-//         })
-//     }else{
-//        next();
-//     }
-// }
+/******************************** Validate Update User Params ***********************/
+let validateUpdateUserParams = (req, res, next)=>{
+    const {errors, isValid} = updateUserValidation(req.body);
+    if(!isValid){
+        return res.status(400).json({
+            errors
+        })
+    }else{
+        next();
+    }
+}
+
 module.exports = {
-    validateCreateUserParams
-    // validateChangePasswordParams,
-    // validateOtpParams
+    validateCreateUserParams,
+    validateUpdateUserParams
+    
 }
