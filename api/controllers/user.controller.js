@@ -10,6 +10,7 @@ const { findAll, findOne } = require('../models/user.model');
 let getAllUser = async (req,res)=>{
     try {
         const result = await User.findAll({
+            attributes: {exclude: ['password']},
             where: {
                 invitedby: req.userData.userId
             }
@@ -22,7 +23,7 @@ let getAllUser = async (req,res)=>{
         }
         else{
             return res.status(400).json({
-                message:"error",
+                message:"Not found",
             })
         }
     } catch (error) {
@@ -36,6 +37,7 @@ let getAllUser = async (req,res)=>{
 let getMyProfile = async (req, res) => {
     try{
         const result = await User.findOne({
+            attributes: {exclude: ['password']},
             where: {
                 id: req.userData.userId
             }
@@ -47,7 +49,7 @@ let getMyProfile = async (req, res) => {
             })
         }else{
             return res.status(400).json({
-                message: "error",
+                message: "User details not found"
             })
         }
     }catch(error) {
@@ -95,7 +97,7 @@ let userLogin = async (req, res) => {
                 email: req.body.email
             }
         })
-        console.log('user', user);
+    //    console.log('user', user);
         if(user){
             bcrypt.compare(req.body.password, user.password, (err, result) => {
                 if (err) {
@@ -115,7 +117,7 @@ let userLogin = async (req, res) => {
                       }
                     );
                     return res.status(200).json({
-                        message: "Successful",
+                        message: "Login Successful",
                         token: token
                       });
                   }else{
@@ -148,15 +150,15 @@ let addMember = async(req, res) => {
         password: password,
         invitedby: req.userData.userId
     })
-    console.log("User",userObj);
+  //  console.log("User",userObj);
     if(!userObj){
-        throw new Error("something went wrong");
+        throw new Error("Something went wrong");
     }
     user["email"] = userObj.email;
     user["username"] = userObj.username;
     user["Created By"] = req.userData.email
     return res.status(200).json({
-        message: "success",
+        message: "New Member Added Successfully",
         result: user
     })
     }
@@ -178,23 +180,22 @@ let deleteMember = async (req, res) => {
                 
             }
         })
-        console.log('deleted', result);
+   //     console.log('deleted', result);
         if(result){
             return res.status(200).json({
-                message:"user deleted",
-            
+                message:"User Deleted Successfully"           
             })
         }
         else{
             return res.status(400).json({
-                message:"error",
+                message: "user not found"
             })
         }
     }
     catch(error){
-        console.log("error", error);
+   //     console.log("error", error);
         return res.status(400).json({
-            message: "something went wrong"
+            message: "Something went wrong"
         })
     }
 }
@@ -203,47 +204,50 @@ let deleteMember = async (req, res) => {
 let updateUser = async (req, res) => {
     try{
         const id = parseInt(req.params.id);
-        let result = null
+        let results = null
         let query = {}
-        console.log(typeof(id), typeof(req.userData.userId));
+  //      console.log(typeof(id), typeof(req.userData.userId));
         if (id === req.userData.userId){
             query["id"] = id
-             result = await User.findOne({
+             results = await User.findOne({
                 where: query
             });
         } else {
             query["id"] = id
             query["invitedby"] = req.userData.userId
-             result = await User.findOne({
+             results = await User.findOne({
                 where: query
             });
         } 
-        console.log("result data", result);
-        if(result){
+ //       console.log("query", query);
+ //       console.log("result data", results);
+        if(results){
             const usrObj = await User.update(
                 {
                     username: req.body.username,
                     phone: req.body.phone,
-                    address: req.body.address
+                    address: req.body.address,
                 },
-                {   returning: true,
-                    where: query
-                }
+                {  
+                    where: query,
+                    returning: true,
+                   
+                } 
             )
-        console.log('user object', usrObj);
+  //      console.log('user object', usrObj);
             if(!usrObj){
                 throw new Error('Something went wrong');
             }
             else{
                 return res.status(200).json({
-                    message: "success",
-                    result: usrObj
+                    message: "User details Updated Successfully",
+                    result: usrObj[1][0]
                 })
             }
         }else{
         
             return res.status(400).json({
-                message: "user not found"
+                message: "User not found"
             })
         }
        
