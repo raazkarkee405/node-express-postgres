@@ -6,6 +6,6 @@ db.authenticate()
     .catch(err => console.log('Error :' + err))
 
 const port = process.env.PORT || 3000;
-app.listen(port, ()=>{
+app.listen(port, () => {
     console.log(`Server running on port ${port}`)
 })

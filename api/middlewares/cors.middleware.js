@@ -6,9 +6,9 @@ const cors = (req, res, next) => {
     );
     if (req.method == "OPTIONS") {
         res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
-      return res.status(200).json({});
+        return res.status(200).json({});
     }
     next();
 };
 
-module.exports = cors; 
+module.exports = cors;

@@ -1,14 +1,16 @@
-const User =  require('../models/user.model');
+const User = require('../models/user.model');
 // create hash password
 const bcrypt = require('bcrypt');
-const { connect } = require('../../app/app');
+const {
+    connect
+} = require('../../app/app');
 let createHashPassword = async (req, res, next) => {
-    try{
+    try {
         let hash = await bcrypt.hash(req.body.password, 10);
         req.hashPassword = hash;
         next();
 
-    }catch(error){
+    } catch (error) {
         return res.status(400).json({
             message: error.message
         })
@@ -17,22 +19,22 @@ let createHashPassword = async (req, res, next) => {
 
 // is email already exists
 let isEmailUnique = async (req, res, next) => {
-    try{
+    try {
         const users = await User.findAll({
             where: {
                 email: req.body.email
             }
         })
         console.log("all user", users);
-        if(users.length > 0){
+        if (users.length > 0) {
             return res.status(400).json({
                 message: "cannot reuse email"
             })
-        }else{
+        } else {
             next();
-        }     
+        }
 
-    }catch(error){
+    } catch (error) {
         return res.status(400).json({
             message: error.message
         })

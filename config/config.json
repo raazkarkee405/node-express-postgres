@@ -1,7 +1,8 @@
 {
 
-    "development":{
-        "JWT_KEY": "helloworld"
+    "development": {
+        "JWT_KEY_ACCESS": "helloworld",
+        "JWT_KEY_REFRESH": "heyworld"
     }
-    
+
 }
