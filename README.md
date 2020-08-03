@@ -15,7 +15,8 @@ The goals for this project are:
  ## Prerequisites
 
 Following dependencies is added to `package.json`
-"dependencies": {
+
+```dependencies: {
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "config": "^3.3.1",
@@ -28,7 +29,7 @@ Following dependencies is added to `package.json`
     "pg": "^8.3.0",
     "sequelize": "^6.3.3",
     "validator": "^13.1.1"
-  }
+  }```
 
 ## Installation
 
